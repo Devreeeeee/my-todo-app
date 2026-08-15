@@ -1,0 +1,314 @@
+
+
+:root{
+  --bg: #F7F5F1;
+  --bg-card: #FFFFFF;
+  --ink: #1C1B1F;
+  --ink-soft: #6B6A72;
+  --accent: #3D4FE0;
+  --accent-soft: #E7E9FB;
+  --line: #E5E2DA;
+  --radius: 14px;
+  --max-width: 880px;
+}
+
+
+/* ============================================
+   Basic reset & page setup
+   ============================================ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #F7F5F1;
+  color: #1C1B1F;
+  font-family: 'Inter', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 3rem 1rem;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #1C1B1F;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0;
+}
+
+nav{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(247,245,241,0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  width: 100%;
+}
+
+.nav-inner{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-inner .logo{
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.nav-links{
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a{
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav-links a::after{
+  content: "";
+  position: absolute;
+  left: 0; bottom: -4px;
+  width: 0; height: 2px;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+.nav-links a:hover::after{ width: 100%; }
+
+.page-content {
+  max-width: 880px;
+  width: 100%;
+  padding: 0 2rem;
+  margin: 3rem auto 0;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   Input + Add button row
+   ============================================ */
+
+.input-row {
+  display: flex;
+  width: 100%;
+  max-width: min(420px, 100%);
+}
+
+#task_name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  padding: clamp(0.5rem, 2vw, 0.7rem) clamp(0.6rem, 2vw, 0.9rem);
+  border: 1px solid #E5E2DA;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+  flex: 1;
+}
+
+#task_name:focus {
+  border-color: #3D4FE0;
+}
+
+#btn {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  padding: clamp(0.5rem, 2vw, 0.7rem) clamp(0.8rem, 3vw, 1.1rem);
+  border: none;
+  border-radius: 0 8px 8px 0;
+  background: #3D4FE0;
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+#btn:hover {
+  background: #2f3fc4;
+}
+
+.delete-btn {
+  margin-left: auto;
+  color: #8D8D99;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0 0.3rem;
+  transition: color 0.15s ease;
+  text-decoration: none;
+}
+
+.delete-btn:hover {
+  color: #E0433D;
+}
+
+/* ============================================
+   Task list
+   ============================================ */
+#task-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#task-list li {
+  font-family: 'Fraunces', Georgia, serif;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: #FFFFFF;
+  border: 1px solid #E5E2DA;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.98rem;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+#task-list li:hover {
+  background: #F1F0EC;
+  transform: translateY(-1px);
+}
+
+/* The checkbox inside each task */
+#task-list li input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3D4FE0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Strikethrough style for completed tasks.
+   Add this class in JS when a checkbox is checked, e.g.:
+   li.classList.toggle("done", inp.checked) */
+.task-text.done {
+  text-decoration: line-through;
+  color: #8D8D99;
+}
+
+/* ============================================
+   Popup overlay + box
+   Add this to your existing style.css
+   ============================================ */
+
+/* A dimmed background behind the popup.
+   Create this element in JS alongside your popup if you want
+   a true "modal" feel (click outside to close, etc.) */
+#detail-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background: #FFFFFF;
+  border: 1px solid #E5E2DA;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 340px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  z-index: 100;
+}
+
+#detail-box .popup-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 1.05rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #E5E2DA;
+  border-radius: 8px;
+  outline: none;
+  width: 100%;
+}
+
+#detail-box textarea {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #E5E2DA;
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  width: 100%;
+}
+
+#detail-box input:focus {
+  border-color: #3D4FE0;
+}
+
+#detail-box button {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #3D4FE0;
+  color: white;
+  cursor: pointer;
+  align-self: flex-end;
+}
+
+#detail-box button:hover {
+  background: #2f3fc4;
+}
+
+.task-text {
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .header-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-content {
+    padding: 0 1rem;
+  }
+
+  .input-row {
+    max-width: 100%;
+  }
+
+  .nav-inner {
+    padding: 1.1rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .nav-inner .logo {
+    font-size: 1rem;
+  }
+}

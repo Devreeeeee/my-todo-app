@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ritik Khatri — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  /* ============================================
+     1. SETUP — edit these variables to re-theme
+        the whole site in one place.
+     ============================================ */
+  :root{
+    --bg: #F7F5F1;
+    --bg-card: #FFFFFF;
+    --ink: #1C1B1F;
+    --ink-soft: #6B6A72;
+    --accent: #3D4FE0;
+    --accent-soft: #E7E9FB;
+    --line: #E5E2DA;
+    --radius: 14px;
+    --max-width: 880px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3{
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 0;
+  }
+
+  .mono{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  a{ color: var(--accent); }
+
+  section{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 5rem 1.5rem;
+  }
+
+  /* ============================================
+     2. NAV
+     ============================================ */
+  nav{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(247,245,241,0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .nav-inner .logo{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .nav-links{
+    display: flex;
+    gap: 1.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-links a{
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+    position: relative;
+  }
+  .nav-links a::after{
+    content: "";
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0; height: 2px;
+    background: var(--accent);
+    transition: width 0.25s ease;
+  }
+  .nav-links a:hover::after{ width: 100%; }
+
+  /* ============================================
+     3. HERO
+     ============================================ */
+  .hero{
+    padding-top: 6rem;
+    padding-bottom: 4rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .hero .mono{ margin-bottom: 0.25rem; }
+  .hero h1{
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    max-width: 14ch;
+  }
+  .hero h1 .accent{ color: var(--accent); }
+  .hero p.lead{
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+  .hero-actions{
+    display: flex;
+    gap: 0.9rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .btn:hover{ transform: translateY(-2px); }
+  .btn-primary{ background: var(--accent); color: white; }
+  .btn-primary:hover{ background: #2f3fc4; }
+  .btn-outline{ border-color: var(--line); color: var(--ink); }
+  .btn-outline:hover{ border-color: var(--accent); color: var(--accent); }
+
+  /* ============================================
+     4. ABOUT
+     ============================================ */
+  .about{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .avatar{
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    background: linear-gradient(155deg, var(--accent-soft), var(--bg-card));
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    color: var(--accent);
+  }
+  .skills{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.25rem;
+    padding: 0;
+    list-style: none;
+  }
+  .skills li{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    color: var(--ink-soft);
+  }
+
+  /* ============================================
+     5. PROJECTS
+     ============================================ */
+  .section-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2rem;
+  }
+  .project-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+  .card{
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -12px rgba(28,27,31,0.18);
+  }
+  .card .tag{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+  .card h3{ font-size: 1.25rem; margin-bottom: 0.4rem; }
+  .card p{ color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
+  .card .arrow{
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* ============================================
+     6. CONTACT
+     ============================================ */
+  .contact{ text-align: center; }
+  .contact h2{ font-size: clamp(1.8rem, 4vw, 2.6rem); }
+  .contact p{ color: var(--ink-soft); max-width: 44ch; margin: 0.75rem auto 1.75rem; }
+  .contact-links{
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .contact-links a{
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+  }
+  .contact-links a:hover{ color: var(--accent); border-color: var(--accent); }
+
+  footer{
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+
+  /* ============================================
+     7. RESPONSIVE
+     ============================================ */
+  @media (max-width: 680px){
+    .about{ grid-template-columns: 1fr; }
+    .avatar{ max-width: 160px; margin: 0 auto; }
+    .project-grid{ grid-template-columns: 1fr; }
+    .nav-links{ gap: 1.1rem; }
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    *{ scroll-behavior: auto !important; transition: none !important; }
+  }
+
+  /* Visible keyboard focus for accessibility */
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- ============================================
+       NAV
+       ============================================ -->
+  <nav>
+    <div class="nav-inner">
+      <span class="logo">Ritik Khatri</span>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO — replace name, role, and intro text
+       ============================================ -->
+  <section class="hero">
+    <span class="mono">Front-end developer · open to work</span>
+    <h1>I build clean, <span class="accent">friendly</span> interfaces.</h1>
+    <p class="lead">
+      I'm a developer who enjoys turning ideas into simple, usable products.
+      This is a starter portfolio template — swap in your own name, projects,
+      and links to make it yours.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#projects">View my work</a>
+      <a class="btn btn-outline" href="#contact">Get in touch</a>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ABOUT — replace bio text and skill tags
+       ============================================ -->
+  <section id="about">
+    <div class="about">
+      <div class="avatar">RK</div>
+      <div>
+        <span class="mono">About</span>
+        <h2 style="margin-top:0.5rem; font-size:1.6rem;">A little about me</h2>
+        <p>
+          Replace this paragraph with a short, honest bio: where you're
+          learning or working, what kind of problems you enjoy solving, and
+          what you're looking for next. Two or three sentences is plenty —
+          people skim.
+        </p>
+        <ul class="skills">
+          <li>HTML</li>
+          <li>CSS</li>
+          <li>JavaScript</li>
+          <li>Git</li>
+          <li>Figma</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       PROJECTS — duplicate a .card block to add more
+       ============================================ -->
+  <section id="projects">
+    <div class="section-head">
+      <div>
+        <span class="mono">Projects</span>
+        <h2 style="margin-top:0.5rem; font-size:1.6rem;">Selected work</h2>
+      </div>
+    </div>
+    <div class="project-grid">
+
+      <a class="card" href="index.html">
+        <span class="tag">01 · Web app</span>
+        <h3>To-Do App</h3>
+        <p>A To-Do list App with all the important features(still improving)</p>
+        <span class="arrow">View project →</span>
+      </a>
+
+      <a class="card" href="#" target="_blank">
+        <span class="tag">02 · Website</span>
+        <h3>Project name</h3>
+        <p>One sentence on the problem it solves and the tools you used to build it.</p>
+        <span class="arrow">View project →</span>
+      </a>
+
+      <a class="card" href="#" target="_blank">
+        <span class="tag">03 · Tool</span>
+        <h3>Project name</h3>
+        <p>One sentence on the problem it solves and the tools you used to build it.</p>
+        <span class="arrow">View project →</span>
+      </a>
+
+      <a class="card" href="#" target="_blank">
+        <span class="tag">04 · Design</span>
+        <h3>Project name</h3>
+        <p>One sentence on the problem it solves and the tools you used to build it.</p>
+        <span class="arrow">View project →</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ============================================
+       CONTACT — replace with your real links
+       ============================================ -->
+  <section id="contact" class="contact">
+    <span class="mono">Contact</span>
+    <h2 style="margin-top:0.5rem;">Let's work together</h2>
+    <p>Have a project in mind or just want to say hi? My inbox is always open.</p>
+    <div class="contact-links">
+      <a href="mailto:you@example.com">you@example.com</a>
+      <a href="#" target="_blank">GitHub</a>
+      <a href="#" target="_blank">LinkedIn</a>
+      <a href="#" target="_blank">Resume</a>
+    </div>
+  </section>
+
+  <footer>
+    &copy; <span id="year"></span> Ritik Khatri. Built with HTML &amp; CSS.
+  </footer>
+
+  <script>
+    // Auto-updates the copyright year — no need to edit this each January.
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

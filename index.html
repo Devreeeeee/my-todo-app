@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav>
+    <div class="nav-inner">
+      <span class="logo">Ritik Khatri</span>
+      <ul class="nav-links">
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="#">To-Do App</a></li>
+      </ul>
+    </div>
+    </nav>
+
+    <div class="page-content">
+        <div class="header-row">
+            <h1>To-Do list</h1>
+            <div class="input-row">
+                <input type="text" id="task_name" placeholder="Enter Task">
+                <button id="btn">Add task</button>
+            </div>
+        </div>
+        <ul id="task-list"></ul>
+    </div>
+
+
+    <script>
+
+        // The base URL of your backend API. Change this if your backend runs elsewhere.
+        const API_URL = 'http://localhost:3000/api/tasks';
+
+        const input = document.getElementById('task_name');
+        const btn = document.getElementById('btn');
+        const taskList = document.getElementById('task-list');
+
+        // Load tasks from the backend as soon as the page opens
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        // --- GET: fetch all tasks and render them ---
+        async function loadTasks() {
+            const response = await fetch(API_URL);
+            const tasks = await response.json();
+
+            taskList.innerHTML = ''; // clear before re-drawing
+            tasks.forEach(renderTask);
+        }
+
+        // Builds one <li> for a task object and appends it to the list.
+        // This is the same DOM-building logic you already wrote, just pulling
+        // its data from the server instead of from `input.value` directly.
+        function renderTask(task) {
+            const li = document.createElement("li");
+            li.dataset.id = task.id; // remember which backend task this <li> represents
+
+            const inp = document.createElement("input");
+            inp.type = "checkbox";
+            inp.checked = task.done;
+
+            const deleteBtn = document.createElement("span");
+            deleteBtn.textContent = "✕";
+            deleteBtn.classList.add("delete-btn");
+
+            const taskText = document.createElement("span");
+            taskText.textContent = task.text;
+            taskText.classList.add("task-text");
+            if (task.done) taskText.classList.add('done');
+
+            li.dataset.title = task.text;
+            li.dataset.description = task.description || "";
+            li.appendChild(taskText);
+            li.prepend(inp);
+            li.appendChild(deleteBtn);
+
+            // Click on the row: open the detail popup (title + description editor)
+            li.addEventListener('click', function () {
+
+                const existing = document.getElementById("detail-box");
+                if (existing) existing.remove();
+
+                const popup = document.createElement("div");
+                popup.id = "detail-box";
+
+                const title = document.createElement("input");
+                title.classList.add("popup-title");
+                title.placeholder = "Title";
+                title.value = li.dataset.title;
+
+                const details = document.createElement("textarea");
+                details.placeholder = "Description..";
+                details.value = li.dataset.description;
+
+                const closeBtn = document.createElement("button");
+                closeBtn.textContent = "Close";
+
+                // Saving is now a PUT request instead of just updating the DOM
+                closeBtn.addEventListener('click', async function () {
+
+                    if (title.value.trim() === "") {
+                        alert("Task name can't be empty!");
+                        return;
+                    }
+
+                    await fetch(`${API_URL}/${task.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            text: title.value,
+                            description: details.value
+                        })
+                    });
+
+                    li.dataset.title = title.value;
+                    li.dataset.description = details.value;
+                    taskText.textContent = title.value;
+                    popup.remove();
+                });
+
+                document.body.appendChild(popup);
+                popup.appendChild(title);
+                popup.appendChild(details);
+                popup.appendChild(closeBtn);
+            });
+
+            // Checkbox toggle: PUT request to update "done" status
+            inp.addEventListener('change', async function () {
+                taskText.classList.toggle('done', inp.checked);
+
+                await fetch(`${API_URL}/${task.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ done: inp.checked })
+                });
+            });
+
+            inp.addEventListener('click', function (event) {
+                event.stopPropagation();
+            });
+
+            // Delete button: DELETE request, then remove the <li> from the page
+            deleteBtn.addEventListener('click', async function (event) {
+                event.stopPropagation();
+
+                await fetch(`${API_URL}/${task.id}`, {
+                    method: 'DELETE'
+                });
+
+                li.remove();
+            });
+
+            taskList.appendChild(li);
+        }
+
+        // --- POST: add a new task ---
+        btn.addEventListener('click', async function () {
+            if (input.value === "") {
+                alert("Enter the task before adding it!");
+                return;
+            }
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: input.value })
+            });
+
+            const newTask = await response.json();
+            renderTask(newTask); // draw the new task using the id the server assigned
+
+            input.value = "";
+        });
+
+        input.addEventListener('keydown', function (event) {
+            if (event.key === "Enter") {
+                btn.click();
+            }
+        });
+
+    </script>
+</body>
+</html>
