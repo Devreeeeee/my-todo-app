@@ -1,31 +1,37 @@
 // server.js
+require('dotenv').config(); // loads TURSO_DATABASE_URL and TURSO_AUTH_TOKEN from .env
+
 const express = require('express');
 const cors = require('cors');
-const Database = require('better-sqlite3');
+const { createClient } = require('@libsql/client');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Render assigns its own PORT automatically
 
-// Middleware: allows requests from your frontend (running on a different port)
+// Middleware: allows requests from your frontend (running on a different port/domain)
 app.use(cors());
 
 // Middleware: lets your server understand JSON sent from the frontend
 app.use(express.json());
 
-// Connect to (or create) tasks.db — this replaces the in-memory array
-const db = new Database('tasks.db');
+// Connect to your Turso cloud database
+const db = createClient({
+  url: process.env.TURSO_DATABASE_URL,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
 // Create the table if it doesn't already exist yet
-// (Note: your earlier practice table used "title"/"completed" — this matches
-// your Express routes instead, which use "text"/"description"/"done")
-db.exec(`
-  CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    text TEXT NOT NULL,
-    description TEXT DEFAULT '',
-    done BOOLEAN DEFAULT 0
-  )
-`);
+async function initDb() {
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS tasks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      text TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      done BOOLEAN DEFAULT 0
+    )
+  `);
+}
+initDb();
 
 // ROUTE 1: Basic health check
 // Try this in your browser: http://localhost:3000/
@@ -34,51 +40,70 @@ app.get('/', (req, res) => {
 });
 
 // ROUTE 2: Get all tasks (GET request)
-app.get('/api/tasks', (req, res) => {
-  const tasks = db.prepare('SELECT * FROM tasks').all();
-  res.json(tasks);
+app.get('/api/tasks', async (req, res) => {
+  const result = await db.execute('SELECT * FROM tasks');
+  res.json(result.rows);
 });
 
 // ROUTE 3: Add a new task (POST request)
-app.post('/api/tasks', (req, res) => {
+app.post('/api/tasks', async (req, res) => {
   const { text, description } = req.body;
-  const result = db.prepare(
-    'INSERT INTO tasks (text, description, done) VALUES (?, ?, 0)'
-  ).run(text, description || '');
 
-  const newTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(result.lastInsertRowid);
-  res.status(201).json(newTask);
+  const insertResult = await db.execute({
+    sql: 'INSERT INTO tasks (text, description, done) VALUES (?, ?, 0)',
+    args: [text, description || ''],
+  });
+
+  const newId = Number(insertResult.lastInsertRowid);
+  const result = await db.execute({
+    sql: 'SELECT * FROM tasks WHERE id = ?',
+    args: [newId],
+  });
+
+  res.status(201).json(result.rows[0]);
 });
 
 // ROUTE 4: Update a task (PUT request) — e.g. mark it done
-app.put('/api/tasks/:id', (req, res) => {
+app.put('/api/tasks/:id', async (req, res) => {
   const id = parseInt(req.params.id);
-  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+
+  const existing = await db.execute({
+    sql: 'SELECT * FROM tasks WHERE id = ?',
+    args: [id],
+  });
+  const task = existing.rows[0];
 
   if (!task) {
     return res.status(404).json({ error: 'Task not found' });
   }
 
   // Only update a field if it was actually sent in the request body.
-  // This lets the frontend update just "done", or just "text"+"description", without wiping the others.
   const updated = {
     text: req.body.text !== undefined ? req.body.text : task.text,
     description: req.body.description !== undefined ? req.body.description : task.description,
-    done: req.body.done !== undefined ? (req.body.done ? 1 : 0) : task.done
+    done: req.body.done !== undefined ? (req.body.done ? 1 : 0) : task.done,
   };
 
-  db.prepare(
-    'UPDATE tasks SET text = ?, description = ?, done = ? WHERE id = ?'
-  ).run(updated.text, updated.description, updated.done, id);
+  await db.execute({
+    sql: 'UPDATE tasks SET text = ?, description = ?, done = ? WHERE id = ?',
+    args: [updated.text, updated.description, updated.done, id],
+  });
 
-  const result = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
-  res.json(result);
+  const result = await db.execute({
+    sql: 'SELECT * FROM tasks WHERE id = ?',
+    args: [id],
+  });
+
+  res.json(result.rows[0]);
 });
 
 // ROUTE 5: Delete a task
-app.delete('/api/tasks/:id', (req, res) => {
+app.delete('/api/tasks/:id', async (req, res) => {
   const id = parseInt(req.params.id);
-  db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
+  await db.execute({
+    sql: 'DELETE FROM tasks WHERE id = ?',
+    args: [id],
+  });
   res.status(204).send();
 });
 
