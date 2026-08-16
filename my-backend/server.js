@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000; // Render assigns its own PORT automatica
 app.use(cors());
 
 // Middleware: lets your server understand JSON sent from the frontend
-app.use(express.json());
+app.use(express.static(__dirname));
 
 // Connect to your Turso cloud database
 const db = createClient({
